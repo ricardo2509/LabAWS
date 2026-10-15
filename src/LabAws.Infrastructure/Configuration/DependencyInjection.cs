@@ -6,7 +6,7 @@ using Amazon.SQS;
 using LabAws.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using LabAws.Application.Interfaces;
+using LabAws.Application.Interfaces.AWS;
 
 namespace LabAws.Infrastructure.Configuration;
 public static class DependencyInjection

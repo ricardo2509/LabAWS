@@ -1,6 +1,6 @@
 ﻿using LabAws.Application.DTO;
 
-namespace LabAws.Application.Interfaces
+namespace LabAws.Application.Interfaces.AWS
 {
     public interface IS3StorageRepository
     {

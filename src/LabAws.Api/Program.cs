@@ -1,14 +1,25 @@
 using LabAws.Api.Middlewares;
 using LabAws.Application.DTO;
-using LabAws.Application.Interfaces;
+using LabAws.Application.Interfaces.AWS;
+using LabAws.Application.Interfaces.Database;
 using LabAws.Application.UseCases;
 using LabAws.Domain.Services;
 using LabAws.Infrastructure.Configuration;
+using LabAws.Infrastructure.Contexts;
 using LabAws.Infrastructure.Mocks;
+using LabAws.Infrastructure.Repositories;
 using LabAws.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("postgresql");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(
+        connectionString,
+        b => b.MigrationsAssembly("LabAws.Api")     //  Force migration to be created on API project
+    ));
 
 // Add Swagger/OpenAPI services for visual tests
 builder.Services.AddEndpointsApiExplorer();
@@ -33,7 +44,10 @@ else
 builder.Services.AddScoped<AwsS3Service>();
 builder.Services.AddScoped<UploadFileUseCase>();
 builder.Services.AddScoped<CreateBucketUseCase>();
+
+builder.Services.AddScoped<ListLogAWSUsecase>();
 builder.Services.AddScoped<ListBucketsUseCase>();
+builder.Services.AddScoped<IUploadLogRepository, UploadLogRepository>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
@@ -105,6 +119,21 @@ app.MapPost("/api/notificar-arquivo", async(string fileName, string bucketName, 
     catch (Exception ex)
     {
         return Results.Problem($"Amazon SQS error: {ex.Message}");
+    }
+});
+
+
+// ENDPOINT (Minimal API): Route to S3 buclets list
+app.MapGet("/api/logs", async (ListLogAWSUsecase useCase) =>
+{
+    try
+    {
+        var logs = await useCase.ExecuteAsync();
+        return Results.Ok(logs);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Error to connect to database: {ex.Message}");
     }
 });
 

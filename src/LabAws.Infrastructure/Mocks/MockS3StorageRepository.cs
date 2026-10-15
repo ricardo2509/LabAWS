@@ -1,5 +1,5 @@
 ﻿using LabAws.Application.DTO;
-using LabAws.Application.Interfaces;
+using LabAws.Application.Interfaces.AWS;
 using System;
 using System.Collections.Generic;
 using System.Linq;

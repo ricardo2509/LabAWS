@@ -1,6 +1,6 @@
 ﻿using Amazon.S3;
 using LabAws.Application.DTO;
-using LabAws.Application.Interfaces;
+using LabAws.Application.Interfaces.AWS;
 
 namespace LabAws.Infrastructure.Services
 {

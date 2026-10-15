@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabAws.Application.Interfaces
+namespace LabAws.Application.Interfaces.AWS
 {
     public interface IS3StorageService
     {

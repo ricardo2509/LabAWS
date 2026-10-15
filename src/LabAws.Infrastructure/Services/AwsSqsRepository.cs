@@ -1,6 +1,6 @@
 ﻿using Amazon.SQS;
 using Amazon.SQS.Model;
-using LabAws.Application.Interfaces;
+using LabAws.Application.Interfaces.AWS;
 using System.Text.Json;
 
 namespace LabAws.Infrastructure.Services

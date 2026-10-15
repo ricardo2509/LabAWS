@@ -92,7 +92,7 @@
 				</div>
 
 				<div class="mb-3">
-					<label class="form-label">Escolha o Arquivo (.csv ou .txt):</label>
+					<label class="form-label">Escolha o Arquivo (somente imagens e texto: ".jpg", ".jpeg", ".png", ".gif", ".txt"):</label>
 					<InputFile class="form-control w-50" OnChange="SelecionarArquivo" />
 				</div>
 
@@ -177,6 +177,7 @@
 	{
 		newBucket = string.Empty;
 		creatBucket = false;
+		messageBucketCreated = string.Empty;
 	}
 
 	private async Task CarregarBuckets()

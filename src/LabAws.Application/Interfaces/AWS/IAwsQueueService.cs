@@ -1,4 +1,4 @@
-﻿namespace LabAws.Application.Interfaces
+﻿namespace LabAws.Application.Interfaces.AWS
 {
     public interface IAwsQueueService
     {

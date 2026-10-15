@@ -1,5 +1,5 @@
 ﻿using LabAws.Application.Exceptions;
-using LabAws.Application.Interfaces;
+using LabAws.Application.Interfaces.AWS;
 
 namespace LabAws.Application.UseCases
 {

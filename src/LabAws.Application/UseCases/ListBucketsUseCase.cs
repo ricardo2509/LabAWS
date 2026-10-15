@@ -1,10 +1,4 @@
-﻿using LabAws.Application.Exceptions;
-using LabAws.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LabAws.Application.Interfaces.AWS;
 
 namespace LabAws.Application.UseCases
 {

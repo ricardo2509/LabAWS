@@ -1,4 +1,8 @@
 ﻿@page "/log"
+@using AwsLab.Web.DTO
+
+@inject HttpClient Http
+
 @layout MainLayout
 
 <div class="container mt-5">
@@ -7,12 +11,23 @@
 
 		<div class="container">
 			<div class="row">
-				@foreach (LogAWS l in logsAWS)
+				<div class="mb-4 col-4">
+					<button class="btn btn-success" @onclick="CarregarLogs">
+						🔄 Update Logs List
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="row">
+				@foreach (UploadLogDto l in logsAWS)
 				{
 					<ul>
 						<li>
-							<span>On @l.Date</span>
-							<span> --  @l.Description</span>
+							<span>On <strong>@l.UploadDate</strong></span>
+							<span> File:  <strong>@l.FileName</strong></span>
+							<span> uploaded on bucket <strong>@l.BucketName</strong></span>
 						</li>
 					</ul>
 				}
@@ -23,18 +38,20 @@
 
 @code {
 
-	private class LogAWS
-	{
-		public DateTime Date;
-		public string Description;
-	};
+	private string urlGetLogs = "https://localhost:7215/api/logs";
+	private string statusMensagem = "";
+	private List<UploadLogDto> logsAWS = new List<UploadLogDto>();
 
+	private async Task CarregarLogs()
+    {
+        try
+        {
+            logsAWS = await Http.GetFromJsonAsync<List<UploadLogDto>>(urlGetLogs);
+		}
+		catch (Exception ex)
+		{
+			statusMensagem = $"Erro no processo: {ex.Message}";
+		}
 
-	private List<LogAWS> logsAWS = new List<LogAWS>()
-	{
-		new LogAWS { Date=DateTime.Now, Description="log1"},
-		new LogAWS { Date=DateTime.Now.Date.AddHours(2), Description="log 2"},
-		new LogAWS { Date=DateTime.Now, Description="Log 3"},
-		new LogAWS { Date=DateTime.Now.AddMinutes(38), Description="Log 04"}
-	};
+	}
 }
