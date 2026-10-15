@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.1" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.104.1" />
+    <PackageReference Include="AWSSDK.SQS" Version="4.0.100.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LabAws.Application\LabAws.Application.csproj" />
+    <ProjectReference Include="..\LabAws.Domain\LabAws.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

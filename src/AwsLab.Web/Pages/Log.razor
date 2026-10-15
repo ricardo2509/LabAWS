@@ -1,0 +1,40 @@
+﻿@page "/log"
+@layout MainLayout
+
+<div class="container mt-5">
+	<div class="card shadow-sm p-4 mb-4">
+		<h2 class="text-primary mb-4">Logs de acesso - AWS Lab</h2>
+
+		<div class="container">
+			<div class="row">
+				@foreach (LogAWS l in logsAWS)
+				{
+					<ul>
+						<li>
+							<span>On @l.Date</span>
+							<span> --  @l.Description</span>
+						</li>
+					</ul>
+				}
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+
+	private class LogAWS
+	{
+		public DateTime Date;
+		public string Description;
+	};
+
+
+	private List<LogAWS> logsAWS = new List<LogAWS>()
+	{
+		new LogAWS { Date=DateTime.Now, Description="log1"},
+		new LogAWS { Date=DateTime.Now.Date.AddHours(2), Description="log 2"},
+		new LogAWS { Date=DateTime.Now, Description="Log 3"},
+		new LogAWS { Date=DateTime.Now.AddMinutes(38), Description="Log 04"}
+	};
+}

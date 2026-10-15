@@ -1,0 +1,31 @@
+## Target directories (.NET compilation folders)
+**/bin/
+**/obj/
+
+## Visual Studio users settings and caches
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider & VS Code (case of using others editors in future)
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+
+## Log Files
+*.log
+
+## Security: NEVER upload local configs or keys
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+## OS (Windows thrash)
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
