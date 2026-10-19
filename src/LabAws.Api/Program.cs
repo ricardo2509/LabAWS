@@ -51,6 +51,8 @@ builder.Services.AddScoped<IUploadLogRepository, UploadLogRepository>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
+builder.WebHost.UseWebRoot("wwwroot");
+
 builder.Services.AddCors(opcoes =>
 {
     opcoes.AddPolicy("LiberarFront", politica =>

@@ -1,7 +1,7 @@
 # ==========================================
 # STAGE 1: Compiling
 # ==========================================
-FROM ://microsoft.com AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy Project files (.csproj) 
@@ -24,7 +24,7 @@ RUN dotnet publish "LabAws.Api.csproj" -c Release -o /app/publish /p:UseAppHost=
 # ==========================================
 # STAGE 2: Runtime
 # ==========================================
-FROM ://microsoft.com AS final
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS final
 WORKDIR /app
 
 # Exposes port to .NET 8 use in Linux containers (8080)
