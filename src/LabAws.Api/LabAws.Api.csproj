@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AwsLab.Web\AwsLab.Web.csproj" />
     <ProjectReference Include="..\LabAws.Application\LabAws.Application.csproj" />
     <ProjectReference Include="..\LabAws.Infrastructure\LabAws.Infrastructure.csproj" />
   </ItemGroup>
