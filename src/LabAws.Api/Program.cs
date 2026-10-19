@@ -144,4 +144,6 @@ app.MapGet("/api/logs", async (ListLogAWSUsecase useCase) =>
 
 app.UseCors("LiberarFront");
 
+app.MapFallbackToFile("index.html");
+
 app.Run();
