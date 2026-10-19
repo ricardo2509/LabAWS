@@ -12,7 +12,11 @@ using LabAws.Infrastructure.Repositories.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = "wwwroot" 
+});
 
 var connectionString = builder.Configuration.GetConnectionString("postgresql");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -50,8 +54,6 @@ builder.Services.AddScoped<ListBucketsUseCase>();
 builder.Services.AddScoped<IUploadLogRepository, UploadLogRepository>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-
-builder.WebHost.UseWebRoot("wwwroot");
 
 builder.Services.AddCors(opcoes =>
 {
