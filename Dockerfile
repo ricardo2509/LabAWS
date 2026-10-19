@@ -19,7 +19,7 @@ COPY . .
 
 # Compile API project in Release saving in /app/publish
 WORKDIR "/src/src/LabAws.Api"
-RUN dotnet publish "LabAws.Api.csproj" -c Release -o /app /p:UseAppHost=false
+RUN dotnet publish "LabAws.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # ==========================================
 # STAGE 2: Runtime
