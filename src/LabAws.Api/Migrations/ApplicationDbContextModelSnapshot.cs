@@ -46,6 +46,10 @@ namespace LabAws.Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<string>("QueueId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("S3Url")
                         .IsRequired()
                         .HasMaxLength(2048)

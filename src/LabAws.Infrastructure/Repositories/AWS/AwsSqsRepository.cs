@@ -3,7 +3,7 @@ using Amazon.SQS.Model;
 using LabAws.Application.Interfaces.AWS;
 using System.Text.Json;
 
-namespace LabAws.Infrastructure.Services
+namespace LabAws.Infrastructure.Repositories.AWS
 {
     public class AwsSqsRepository : IMensageriaRepository
     {

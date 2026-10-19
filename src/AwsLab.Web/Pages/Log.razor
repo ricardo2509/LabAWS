@@ -19,20 +19,38 @@
 			</div>
 		</div>
 
-		<div class="container">
-			<div class="row">
-				@foreach (UploadLogDto l in logsAWS)
-				{
-					<ul>
-						<li>
-							<span>On <strong>@l.UploadDate</strong></span>
-							<span> File:  <strong>@l.FileName</strong></span>
-							<span> uploaded on bucket <strong>@l.BucketName</strong></span>
-						</li>
-					</ul>
-				}
+		@if (logsAWS.Any())
+		{
+			<div class="container">
+				<div class="row">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Date upload</th>
+								<th>File</th>
+								<th>AWS Id</th>
+								<th>Bucket</th>
+							</tr>
+						</thead>
+						@foreach (UploadLogDto l in logsAWS)
+						{
+							<tbody>
+								<tr>
+									<td>@l.UploadDate</td>
+									<td>@l.FileName</td>
+									<td>@l.QueueId</td>
+									<td>@l.BucketName</td>
+								</tr>
+							</tbody>
+						}
+					</table>
+				</div>
 			</div>
-		</div>
+		}
+		else if (loaded)
+		{
+			<div class="alert alert-warning">@(string.IsNullOrEmpty(statusMensagem) ? "AWS Queue log not found" : statusMensagem)</div>
+		}
 	</div>
 </div>
 
@@ -41,12 +59,15 @@
 	private string urlGetLogs = "https://localhost:7215/api/logs";
 	private string statusMensagem = "";
 	private List<UploadLogDto> logsAWS = new List<UploadLogDto>();
+	private bool loaded=false	;
 
 	private async Task CarregarLogs()
-    {
-        try
-        {
-            logsAWS = await Http.GetFromJsonAsync<List<UploadLogDto>>(urlGetLogs);
+	{
+		try
+		{
+			statusMensagem = "";
+			loaded = true;
+			logsAWS = await Http.GetFromJsonAsync<List<UploadLogDto>>(urlGetLogs);
 		}
 		catch (Exception ex)
 		{

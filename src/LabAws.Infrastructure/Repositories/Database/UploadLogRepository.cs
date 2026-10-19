@@ -3,7 +3,7 @@ using LabAws.Domain.Entities;
 using LabAws.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 
-namespace LabAws.Infrastructure.Repositories
+namespace LabAws.Infrastructure.Repositories.Database
 {
     public class UploadLogRepository : IUploadLogRepository
     {

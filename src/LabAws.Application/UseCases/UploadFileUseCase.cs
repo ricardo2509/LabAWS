@@ -26,10 +26,11 @@ namespace LabAws.Application.UseCases
             string fileUrl = await _s3Repository.UploadFileAsync(command);
 
             // 3. Notify AWS SQS
-            await _awsQueueService.SendNotificationAsync(fileUpload.Name, command.BucketName);
+            var notifiicationresponse = await _awsQueueService.SendNotificationAsync(fileUpload.Name, command.BucketName);
 
             // 4. Log upload on Postgres DB
             var log = new UploadLog(
+                queueId: notifiicationresponse,
                 fileName: command.FileName,
                 bytesLen: command.Length,
                 contentType: command.ContentType,

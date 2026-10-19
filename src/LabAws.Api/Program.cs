@@ -7,8 +7,8 @@ using LabAws.Domain.Services;
 using LabAws.Infrastructure.Configuration;
 using LabAws.Infrastructure.Contexts;
 using LabAws.Infrastructure.Mocks;
-using LabAws.Infrastructure.Repositories;
-using LabAws.Infrastructure.Services;
+using LabAws.Infrastructure.Repositories.AWS;
+using LabAws.Infrastructure.Repositories.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -72,9 +72,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 app.UseAntiforgery();
-
 
 // Route to create bucket
 app.MapPost("/api/createBucket", async (string bucketName, [FromServices] CreateBucketUseCase useCase) =>
@@ -122,7 +124,6 @@ app.MapPost("/api/notificar-arquivo", async(string fileName, string bucketName, 
     }
 });
 
-
 // ENDPOINT (Minimal API): Route to S3 buclets list
 app.MapGet("/api/logs", async (ListLogAWSUsecase useCase) =>
 {
@@ -136,8 +137,6 @@ app.MapGet("/api/logs", async (ListLogAWSUsecase useCase) =>
         return Results.Problem($"Error to connect to database: {ex.Message}");
     }
 });
-
-
 
 app.UseCors("LiberarFront");
 

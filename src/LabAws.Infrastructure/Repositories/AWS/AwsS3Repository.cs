@@ -2,7 +2,7 @@
 using LabAws.Application.DTO;
 using LabAws.Application.Interfaces.AWS;
 
-namespace LabAws.Infrastructure.Services
+namespace LabAws.Infrastructure.Repositories.AWS
 {
     public class AwsS3Repository : IS3StorageRepository
     {
@@ -17,18 +17,13 @@ namespace LabAws.Infrastructure.Services
         {
             Amazon.S3.Model.PutBucketResponse response = new Amazon.S3.Model.PutBucketResponse();
 
-            if (!await FindBucketAsync(nomeDoBucket))
+            var request = new Amazon.S3.Model.PutBucketRequest
             {
-                var request = new Amazon.S3.Model.PutBucketRequest
-                {
-                    BucketName = nomeDoBucket.ToLower().Trim(),
-                    UseClientRegion = true
-                };
-                response = await s3Client.PutBucketAsync(request);
-                return response.HttpStatusCode.ToString("201");
-            }
-            else
-                return response.HttpStatusCode.ToString("302");
+                BucketName = nomeDoBucket.ToLower().Trim(),
+                UseClientRegion = true
+            };
+            response = await s3Client.PutBucketAsync(request);
+            return response.HttpStatusCode.ToString();
         }
 
         async public Task<List<string>> ListBucketsAsync()
@@ -36,11 +31,9 @@ namespace LabAws.Infrastructure.Services
             List<string> nomesDosBuckets = new List<string>();
             var response = await s3Client.ListBucketsAsync();
 
-            // Proteção: Se a lista de buckets vier nula da AWS, inicializamos uma lista vazia
             if (response.Buckets == null)
-            {
                 return new List<string>();
-            }
+         
             return response.Buckets.Select(b => b.BucketName).ToList();
         }
 

@@ -3,10 +3,10 @@ using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.SQS;
-using LabAws.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using LabAws.Application.Interfaces.AWS;
+using LabAws.Infrastructure.Repositories.AWS;
 
 namespace LabAws.Infrastructure.Configuration;
 public static class DependencyInjection

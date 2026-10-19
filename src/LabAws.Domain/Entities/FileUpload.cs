@@ -5,7 +5,7 @@ namespace LabAws.Domain.Entities
     public class FileUpload
     {
         private const int MaxFileSizeInBytes = 5 * 1024 * 1024; // 5 MB
-        private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+        private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".txt" };
 
         public string Name { get; private set; }
         public long BytesLen { get; private set; }

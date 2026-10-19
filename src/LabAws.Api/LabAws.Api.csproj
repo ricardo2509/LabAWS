@@ -10,6 +10,7 @@
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.1" />
     <PackageReference Include="AWSSDK.S3" Version="4.0.104.1" />
     <PackageReference Include="AWSSDK.SQS" Version="4.0.100.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.21" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.21">
       <PrivateAssets>all</PrivateAssets>
