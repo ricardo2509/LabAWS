@@ -1,4 +1,5 @@
 ﻿using LabAws.Application.Interfaces.AWS;
+using LabAws.Domain.Exceptions;
 
 namespace LabAws.Application.UseCases
 {

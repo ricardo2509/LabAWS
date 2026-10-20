@@ -15,6 +15,7 @@ namespace LabAws.Infrastructure.Contexts
 
         }
         public DbSet<UploadLog> UploadLogs { get; set; }
+        public DbSet<ErrorLog> ErrorLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

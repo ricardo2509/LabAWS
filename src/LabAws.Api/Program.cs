@@ -52,6 +52,7 @@ builder.Services.AddScoped<CreateBucketUseCase>();
 builder.Services.AddScoped<ListLogAWSUsecase>();
 builder.Services.AddScoped<ListBucketsUseCase>();
 builder.Services.AddScoped<IUploadLogRepository, UploadLogRepository>();
+builder.Services.AddScoped<IErrorLogRepository, ErrorLogRepository>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
@@ -93,15 +94,8 @@ app.MapPost("/api/createBucket", async (string bucketName, [FromServices] Create
 // ENDPOINT (Minimal API): Route to S3 buclets list
 app.MapGet("/api/buckets", async (ListBucketsUseCase useCase) =>
 {
-    try
-    {
         var buckets = await useCase.ExecuteAsync();
         return Results.Ok(buckets);
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem($"Erro ao conectar na AWS: {ex.Message}");
-    }
 });
 
 app.MapPost("/api/uploadFile", static async (string bucketName, IFormFile file, [FromServices] UploadFileUseCase useCase) =>

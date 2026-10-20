@@ -1,6 +1,8 @@
 ﻿using Amazon.S3;
 using LabAws.Application.DTO;
 using LabAws.Application.Interfaces.AWS;
+using LabAws.Domain.Exceptions;
+using LabAws.Infrastructure.Exceptions;
 
 namespace LabAws.Infrastructure.Repositories.AWS
 {
@@ -15,28 +17,43 @@ namespace LabAws.Infrastructure.Repositories.AWS
 
         async public Task<string> CreateBucketAsync(string nomeDoBucket)
         {
-            Amazon.S3.Model.PutBucketResponse response = new Amazon.S3.Model.PutBucketResponse();
-
-            var request = new Amazon.S3.Model.PutBucketRequest
+            try
             {
-                BucketName = nomeDoBucket.ToLower().Trim(),
-                UseClientRegion = true
-            };
-            response = await s3Client.PutBucketAsync(request);
-            return response.HttpStatusCode.ToString();
+                Amazon.S3.Model.PutBucketResponse response = new Amazon.S3.Model.PutBucketResponse();
+
+                var request = new Amazon.S3.Model.PutBucketRequest
+                {
+                    BucketName = nomeDoBucket.ToLower().Trim(),
+                    UseClientRegion = true
+                };
+                response = await s3Client.PutBucketAsync(request);
+                return response.HttpStatusCode.ToString();
+            }
+            catch (AmazonS3Exception ex)
+            {
+                throw new InfrastructureException(
+                    "Fail creating AWS buckets.", ex);
+            }
         }
 
         async public Task<List<string>> ListBucketsAsync()
         {
-            List<string> nomesDosBuckets = new List<string>();
-            var response = await s3Client.ListBucketsAsync();
+            try
+            {
+                List<string> nomesDosBuckets = new List<string>();
+                var response = await s3Client.ListBucketsAsync();
 
-            if (response.Buckets == null)
-                return new List<string>();
-         
-            return response.Buckets.Select(b => b.BucketName).ToList();
+                if (response.Buckets == null)
+                    return new List<string>();
+
+                return response.Buckets.Select(b => b.BucketName).ToList();
+            }
+            catch (AmazonS3Exception ex)
+            {
+                throw new InfrastructureException(
+                    "Fail accessing AWS buckets.", ex);
+            }
         }
-
         async public Task<bool> FindBucketAsync(string bucketName)
         {
             var ret = await ListBucketsAsync();
@@ -61,9 +78,10 @@ namespace LabAws.Infrastructure.Repositories.AWS
                 var response = await s3Client.PutObjectAsync(request);
                 return response.HttpStatusCode.ToString();
             }
-            catch (Exception ex)
+            catch (AmazonS3Exception ex)
             {
-                return ex.Message;
+                throw new InfrastructureException(
+                    "File upload to AWS failed.", ex);
             }
         }
     }
