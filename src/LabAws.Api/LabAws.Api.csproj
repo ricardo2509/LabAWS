@@ -25,4 +25,8 @@
     <ProjectReference Include="..\LabAws.Infrastructure\LabAws.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
 </Project>

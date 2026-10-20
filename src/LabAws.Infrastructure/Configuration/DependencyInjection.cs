@@ -1,38 +1,49 @@
 ﻿using Amazon;
+using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.SQS;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using LabAws.Application.Interfaces.AWS;
 using LabAws.Infrastructure.Repositories.AWS;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LabAws.Infrastructure.Configuration;
 public static class DependencyInjection
 {
-    // Criamos um método de extensão para a interface IServiceCollection do .NET
+    // Extension method for .Net interface IServiceCollection 
     public static IServiceCollection AddInfrastructureAws(this IServiceCollection services, IConfiguration configuration)
     {
-        // 1. Criamos o objeto de opções definindo a região
         var opcoesAws = new Amazon.Extensions.NETCore.Setup.AWSOptions
         {
             Region = RegionEndpoint.USEast1
         };
 
-        // 2. Buscamos o perfil "default" direto do arquivo físico .aws/credentials da máquina
-        // (O SDK vai ler a pasta do usuário do Windows ou a pasta do container Docker automaticamente)
-        var chain = new CredentialProfileStoreChain();
-        if (chain.TryGetAWSCredentials("default", out AWSCredentials credentials))
+        if (Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") != null && Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY") != null)
         {
+            var key = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+            var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+
+            var credentials = new BasicAWSCredentials(key, secretKey);
             opcoesAws.Credentials = credentials;
-            // 2. Injeta os clientes nativos da AWS aqui dentro, escondidos do mundo exterior
             services.AddAWSService<IAmazonS3>(opcoesAws);
             services.AddAWSService<IAmazonSQS>(opcoesAws);
-
-            // 3. Registra o seu serviço de mensageria
-            services.AddScoped<IMensageriaRepository, AwsSqsRepository>();
         }
+        else
+        {
+            // 2. Read "default" from .aws/credentials da máquina
+            var chain = new CredentialProfileStoreChain();
+
+            if (chain.TryGetAWSCredentials("default", out AWSCredentials credentials))
+            {
+                opcoesAws.Credentials = credentials;
+                services.AddAWSService<IAmazonS3>(opcoesAws);
+                services.AddAWSService<IAmazonSQS>(opcoesAws);
+            }
+        }
+        services.AddDefaultAWSOptions(opcoesAws);
+
         return services;
     }
 }

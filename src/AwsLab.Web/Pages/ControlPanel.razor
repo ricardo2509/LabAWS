@@ -60,11 +60,11 @@
 		{
 			<div class="alert alert-info">Buscando dados da API...</div>
 		}
-		else if (buckets == null || !buckets.Any())
+		else if ((buckets == null || !buckets.Any()) && !string.IsNullOrEmpty(statusMensagem))
 		{
-			<div class="alert alert-warning">Nenhum bucket selecionado ou carregado.</div>
+			<div class="alert alert-warning">@statusMensagem</div>
 		}
-		else
+		else if (buckets != null && buckets.Any())
 		{
 			<ul class="list-group mb-4">
 				@foreach (var bucket in buckets)
@@ -118,7 +118,7 @@
 
 
 @code {
-	private List<string>? buckets;
+	private List<string>? buckets = new List<string>();
 	private bool carregandoBuckets = false;
 	private bool processandoUpload = false;
 
@@ -187,8 +187,9 @@
 			buckets = await Http.GetFromJsonAsync<List<string>>(urlGetBuckets);
 			if (buckets != null && buckets.Any())
 			{
-				bucketSelecionado = buckets.First(); // Pré-seleciona o primeiro
+				bucketSelecionado = buckets.First();
 			}
+			statusMensagem = buckets == null || !buckets.Any() ? "No bucket found." : "";
 		}
 		catch (Exception ex)
 		{

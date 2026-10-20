@@ -47,27 +47,25 @@
 				</div>
 			</div>
 		}
-		else if (loaded)
+		else if (!string.IsNullOrEmpty(@statusMensagem))
 		{
-			<div class="alert alert-warning">@(string.IsNullOrEmpty(statusMensagem) ? "AWS Queue log not found" : statusMensagem)</div>
+			<div class="alert alert-warning">@statusMensagem</div>
 		}
 	</div>
 </div>
 
 @code {
 
-	private string urlGetLogs = "/api/logs";
+	private string urlGetLogs = "api/logs";
 	private string statusMensagem = "";
 	private List<UploadLogDto> logsAWS = new List<UploadLogDto>();
-	private bool loaded=false	;
 
 	private async Task CarregarLogs()
 	{
 		try
-		{
-			statusMensagem = "";
-			loaded = true;
-			logsAWS = await Http.GetFromJsonAsync<List<UploadLogDto>>(urlGetLogs);
+		{			
+			logsAWS = await Http.GetFromJsonAsync<List<UploadLogDto>>(urlGetLogs) ?? new List<UploadLogDto>();
+			statusMensagem = logsAWS.Any() ? "" : "No records";
 		}
 		catch (Exception ex)
 		{
