@@ -1,37 +1,45 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="row">
-	<div class="col-2">
-
+<div class="col">
+	<div class="col-12">
 		<div class="container mt-5">
 			<div class="card shadow-sm pt-4 pb-2 ps-1 mb-4">
 				<h5 class="text-primary ps-2 mb-4">Options</h5>
 
-				<div class="container">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="nav-item col-6">
+							<NavLink class="nav-link pb-1" href="ControlPanel">
+								<span class="oi oi-arrow-circle-right"></span>AWS Control Panel
+							</NavLink>
+						</div>
 
-					<div class="nav-item">
-						<NavLink class="nav-link pb-1" href="ControlPanel">
-							<span class="oi oi-arrow-circle-right"></span>AWS Control Panel
-						</NavLink>
-					</div>
+						<div class="nav-item col-4">
+							<NavLink class="nav-link pb-1" href="Log">
+								<span class="oi oi-arrow-circle-right"></span>Log files
+							</NavLink>
+						</div>
 
-					<div class="nav-item">
-						<NavLink class="nav-link pb-1" href="Log">
-							<span class="oi oi-arrow-circle-right"></span>Log files
-						</NavLink>
-					</div>
+						<div class="nav-item col-2">
+							<NavLink class="nav-link pb-1" href="Log">
+								<span class="oi oi-arrow-circle-right"></span>
+							</NavLink>
+						</div>
 
-@* 					<div class="nav-item">
+						@* 					<div class="nav-item">
 						<NavLink class="nav-link pb-1" href="management">
 							<span class="oi oi-arrow-circle-right"></span>Management page
 						</NavLink>
 					</div>
  *@				</div>
+				</div>
 			</div>
 		</div>
 
 	</div>
-	<div class="col-10">
-		@Body
+	<div class="col-12">
+		<div class="container mt-5">
+			@Body
+		</div>
 	</div>
 </div>

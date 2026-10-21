@@ -9,21 +9,21 @@
 
 <div class="container mt-5">
 	<div class="card shadow-sm p-4 mb-4">
-		<h2 class="text-primary mb-4">Painel de Controle - AWS Lab</h2>
+		<h2 class="text-primary mb-4">Control Panel - AWS Lab</h2>
 
 		<div class="container">
 			<div class="row">
-				<div class="mb-4 col-4">
+				<div class="mb-4 col-6">
 					<button class="btn btn-success" @onclick="CarregarBuckets">
-						🔄 Atualizar Lista de Buckets
+						🔄 Refresh buckets
 					</button>
 				</div>
 
-				<div class="mb-4 col-8">
+				<div class="mb-4 col-6">
 					@if (!creatBucket)
 					{
 						<button class="btn btn-success" @onclick="AddBucket">
-							🆕 Create new Bucket
+							🆕 Create Bucket
 						</button>
 					}
 					@if (creatBucket)
@@ -58,7 +58,7 @@
 
 		@if (carregandoBuckets)
 		{
-			<div class="alert alert-info">Buscando dados da API...</div>
+			<div class="alert alert-info">Searching API data...</div>
 		}
 		else if ((buckets == null || !buckets.Any()) && !string.IsNullOrEmpty(statusMensagem))
 		{
@@ -78,12 +78,12 @@
 
 			<!-- SEÇÃO DE UPLOAD DE ARQUIVO -->
 			<div class="border p-4 rounded bg-white shadow-xs mt-4">
-				<h4 class="text-secondary mb-3">📤 Enviar Arquivo</h4>
+				<h4 class="text-secondary mb-3">📤 Upload file</h4>
 
 				<div class="mb-3">
-					<label class="form-label">Selecione o Bucket de Destino:</label>
+					<label class="form-label">Select bucket:</label>
 					<select class="form-select w-50" @bind="bucketSelecionado">
-						<option value="">-- Escolha um Bucket --</option>
+						<option value="">-- Choose bucket --</option>
 						@foreach (var bucket in buckets)
 						{
 							<option value="@bucket">@bucket</option>
@@ -92,18 +92,18 @@
 				</div>
 
 				<div class="mb-3">
-					<label class="form-label">Escolha o Arquivo (somente imagens e texto: ".jpg", ".jpeg", ".png", ".gif", ".txt"):</label>
+					<label class="form-label">Choose file (expect: ".jpg", ".jpeg", ".png", ".gif", ".txt"):</label>
 					<InputFile class="form-control w-50" OnChange="SelecionarArquivo" />
 				</div>
 
-				<button class="btn btn-secondary w-50" @onclick="EnviarArquivo" disabled="@(string.IsNullOrEmpty(bucketSelecionado) || arquivoSelecionado == null || processandoUpload)">
+				<button class="btn btn-secondary" @onclick="EnviarArquivo" disabled="@(string.IsNullOrEmpty(bucketSelecionado) || arquivoSelecionado == null || processandoUpload)">
 					@if (processandoUpload)
 					{
-						<span>Enviando e Notificando Fila...</span>
+						<span>Uploading and notifiyng SQS...</span>
 					}
 					else
 					{
-						<span>Enviar para o S3 e SQS</span>
+						<span>Send to S3 & SQS</span>
 					}
 				</button>
 
