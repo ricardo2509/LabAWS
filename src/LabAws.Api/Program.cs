@@ -19,10 +19,11 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 });
 
 var connectionString = builder.Configuration.GetConnectionString("postgresql");
+//  Force migration to be created on API project
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
         connectionString,
-        b => b.MigrationsAssembly("LabAws.Api")     //  Force migration to be created on API project
+        b => b.MigrationsAssembly("LabAws.Api")     
     ));
 
 // Add Swagger/OpenAPI services for visual tests
