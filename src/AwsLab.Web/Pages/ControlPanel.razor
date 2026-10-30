@@ -7,54 +7,65 @@
 
 @inject HttpClient Http
 
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
 <div class="container mt-5">
 	<div class="card shadow-sm p-4 mb-4">
 		<h2 class="text-primary mb-4">Control Panel - AWS Lab</h2>
 
-		<div class="container">
-			<div class="row">
-				<div class="mb-4 col-6">
-					<button class="btn btn-success" @onclick="CarregarBuckets">
+		<div class="row">
+			@if (!addingBucket)
+			{
+				<div class="mb-4 col-12 col-sm-4 col-md-3">
+					<button class="btn btn-success w-100" @onclick="CarregarBuckets">
 						🔄 Refresh buckets
 					</button>
 				</div>
+			}
 
-				<div class="mb-4 col-6">
-					@if (!creatBucket)
-					{
-						<button class="btn btn-success" @onclick="AddBucket">
-							🆕 Create Bucket
-						</button>
-					}
-					@if (creatBucket)
-					{
-						<div class="container m-0 p-0 pt-2">
-							<div class="row">
-								<div class="col-2">
-									<label>Bucket name</label>
-								</div>
-								<div class="col-10">
-									<input type="text" @bind="newBucket" />
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-2 p-2">
-									<button class="btn btn-primary" @onclick="CreateBucket">Create</button>
-								</div>
-								<div class="col-10 p-2">
-									<button class="btn btn-secondary" @onclick="CancelBucket">Cancel</button>
-								</div>
-							</div>
-						</div>
-					}
-					@if (!string.IsNullOrEmpty(messageBucketCreated))
-					{
-						<div class="alert alert-success mt-3">@messageBucketCreated</div>
-					}
+			@if (!creatBucket)
+			{
+				<div class="mb-4 col-12 col-sm-4 col-md-3">
+					<button class="btn btn-success w-100" @onclick="AddBucket">
+						🆕 Create Bucket
+					</button>
+				</div>
+			}
+		</div>
+
+		@if (creatBucket)
+		{
+			<!-- Nova row isolada para o formulário de criação de bucket -->
+			<div class="row align-items-end g-2 mb-3">
+				<!-- Campo de Input -->
+				<div class="col-12 col-md-4">
+					<label class="form-label fw-bold">Bucket name</label>
+					<input type="text" class="form-control" @bind="newBucket" placeholder="Digite o nome..." />
 				</div>
 
+				<!-- Botão Confirmar/Create -->
+				<div class="col-6 col-md-2">
+					<button class="btn btn-primary w-100" @onclick="CreateBucket">Create</button>
+				</div>
+
+				<!-- Botão Cancelar -->
+				<div class="col-6 col-md-2">
+					<button class="btn btn-secondary w-100" @onclick="CancelBucket">Cancel</button>
+				</div>
 			</div>
-		</div>
+		}
+
+		@if (!string.IsNullOrEmpty(messageBucketCreated))
+		{
+			<div class="row">
+				<div class="col-12">
+					<div class="alert alert-success mt-3">@messageBucketCreated</div>
+				</div>
+			</div>
+		}
 
 		@if (carregandoBuckets)
 		{
@@ -126,6 +137,7 @@
 	private IBrowserFile? arquivoSelecionado;
 	private string statusMensagem = "";
 
+	private bool addingBucket = false;
 	private bool creatBucket = false;
 	private string newBucket = string.Empty;
 	private string messageBucketCreated = string.Empty;
@@ -137,6 +149,7 @@
 
 	private void AddBucket()
 	{
+		addingBucket = true;
 		creatBucket = true;
 		messageBucketCreated = string.Empty;
 		carregandoBuckets = false;
@@ -164,11 +177,12 @@
 		catch (Exception ex)
 		{
 			messageBucketCreated = $"Error: {ex.Message}";
-			creatBucket = false;
 		}
 		finally
 		{
 			newBucket = string.Empty;
+			creatBucket = false;
+			addingBucket = false;
 		}
 	}
 
@@ -177,6 +191,7 @@
 		newBucket = string.Empty;
 		creatBucket = false;
 		messageBucketCreated = string.Empty;
+		addingBucket = false;
 	}
 
 	private async Task CarregarBuckets()
