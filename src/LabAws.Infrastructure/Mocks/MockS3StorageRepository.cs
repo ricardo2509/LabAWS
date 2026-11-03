@@ -1,5 +1,6 @@
 ﻿using LabAws.Application.DTO;
 using LabAws.Application.Interfaces.AWS;
+using LabAws.Application.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,14 @@ namespace LabAws.Infrastructure.Mocks
         {
             string fakeURL = $"https://amazonaws.com{bucketFileCommand.BucketName}/{Guid.NewGuid()}_{bucketFileCommand.FileName}";
             return Task.FromResult(fakeURL);
+        }
+        public Task<FileAccessResponse> ValidateAccessDownloadAsync(string bucketName, string fileKey)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<string> SecureDownloadURLAsync(string bucketName, string fileKey)
+        {
+            throw new NotImplementedException();
         }
     }
 }

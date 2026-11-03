@@ -55,6 +55,8 @@ builder.Services.AddScoped<ListBucketsUseCase>();
 builder.Services.AddScoped<IUploadLogRepository, UploadLogRepository>();
 builder.Services.AddScoped<IErrorLogRepository, ErrorLogRepository>();
 
+builder.Services.AddScoped<DownloadFileAWSUsecase>();
+
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
 builder.Services.AddCors(opcoes =>
@@ -136,6 +138,37 @@ app.MapGet("/api/logs", async (ListLogAWSUsecase useCase) =>
         return Results.Problem($"Error to connect to database: {ex.Message}");
     }
 });
+
+app.MapGet("/api/testPermission", async (string bucketName, string fileKey, DownloadFileAWSUsecase useCase) =>
+{
+    try
+    {
+        var accessGranted = await useCase.ValidateAccessExecute(bucketName, fileKey);
+        if(accessGranted.HasAccess)
+            return Results.Ok();
+        else
+            return Results.Problem(accessGranted.Message, statusCode: 403);
+//        return Results.Text(accessGranted.Message, "application/json");
+    }
+    catch
+    {
+        return Results.Problem($"Error downloading th file");
+    }
+});
+
+app.MapGet("/api/downloadFileS3", async (string bucketName, string fileKey, DownloadFileAWSUsecase useCase) =>
+{
+    try
+    {
+        var link = await useCase.Execute(bucketName, fileKey);
+        return Results.Text(link, "application/octet-stream");
+    }
+    catch
+    {
+        return Results.Problem($"Error downloading th file");
+    }
+});
+
 
 app.UseCors("LiberarFront");
 

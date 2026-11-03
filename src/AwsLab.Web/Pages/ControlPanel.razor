@@ -7,11 +7,6 @@
 
 @inject HttpClient Http
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-
 <div class="container mt-5">
 	<div class="card shadow-sm p-4 mb-4">
 		<h2 class="text-primary mb-4">Control Panel - AWS Lab</h2>
@@ -38,20 +33,16 @@
 
 		@if (creatBucket)
 		{
-			<!-- Nova row isolada para o formulário de criação de bucket -->
 			<div class="row align-items-end g-2 mb-3">
-				<!-- Campo de Input -->
 				<div class="col-12 col-md-4">
 					<label class="form-label fw-bold">Bucket name</label>
 					<input type="text" class="form-control" @bind="newBucket" placeholder="Digite o nome..." />
 				</div>
 
-				<!-- Botão Confirmar/Create -->
 				<div class="col-6 col-md-2">
 					<button class="btn btn-primary w-100" @onclick="CreateBucket">Create</button>
 				</div>
 
-				<!-- Botão Cancelar -->
 				<div class="col-6 col-md-2">
 					<button class="btn btn-secondary w-100" @onclick="CancelBucket">Cancel</button>
 				</div>

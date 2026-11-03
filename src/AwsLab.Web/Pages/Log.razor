@@ -1,20 +1,34 @@
 ﻿@page "/log"
 @using AwsLab.Web.DTO
+@using Microsoft.AspNetCore.Http
+@using System.Text.Json
+@using System.Text.Json.Nodes
 
 @inject HttpClient Http
+@inject IJSRuntime JS
 
 @layout MainLayout
 
 <div class="container mt-5">
 	<div class="card shadow-sm p-4 mb-4">
-		<h2 class="text-primary mb-4">Logs de acesso - AWS Lab</h2>
+		<h2 class="text-primary mb-4">Log files access - AWS Lab</h2>
 
 		<div class="container">
 			<div class="row">
-				<div class="mb-4 col-12">
+				<div class="mb-4 col-6">
 					<button class="btn btn-success" @onclick="CarregarLogs">
 						🔄 Update Logs List
 					</button>
+				</div>
+				<div class="mb-4 col-6">
+					@if (loading)
+					{
+						<div class="d-flex align-items-center">
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						</div>
+					}
 				</div>
 			</div>
 		</div>
@@ -22,32 +36,66 @@
 		@if (logsAWS.Any())
 		{
 			<div class="container">
-				<div class="row">
-					<table class="table table-hover">
-						<thead>
-							<tr>
-								<th>Date upload</th>
-								<th>File</th>
-								<th>AWS Id</th>
-								<th>Bucket</th>
-							</tr>
-						</thead>
-						@foreach (UploadLogDto l in logsAWS)
-						{
-							<tbody>
-								<tr>
-									<td>@l.UploadDate</td>
-									<td>@l.FileName</td>
-									<td>@l.QueueId</td>
-									<td>@l.BucketName</td>
-								</tr>
-							</tbody>
-						}
-					</table>
+				<div class="row d-none d-sm-flex fw-bold border-bottom pb-2 mb-3 text-secondary">
+					<div class="col-md-5">File</div>
+					<div class="col-md-4">Bucket</div>
+					<div class="col-md-3 text-end">
+					</div>
 				</div>
+				@foreach (UploadLogDto l in logsAWS)
+				{
+					<div class="row border-bottom py-3 align-items-center">
+
+						<div class="col-12 col-md-4 mb-2 mb-md-0">
+							<span class="d-sm-none text-muted small d-block">File:</span>
+							<strong>@l.FileName</strong>
+						</div>
+						<div class="col-12 col-md-2 mb-3 mb-md-0">
+							<span class="d-sm-none text-muted small d-block">Bucket:</span>
+							@l.BucketName
+						</div>
+						<div class="col-12 col-md-6 text-sm-end">
+							<div class="row g-2 justify-content-sm-end">
+								<div class="col-7 col-sm-4">
+									<button @onclick="() => ObterUrlSegura(l.BucketName, l.QueueId, l.FileName)" class="btn btn-outline-primary btn-sm">
+										📥 Baixar Arquivo
+									</button>
+								</div>
+								<div class="col-5">
+									<span class="badge bg-success ms-2"><i class="bi bi-shield-lock"></i> Link Seguro (10m)</span>
+								</div>
+							</div>
+							<div class="row g-2 mt-1 justify-content-sm-center">
+								@if (downloading && fileDownloaded == string.Concat(l.BucketName, l.FileName))
+								{
+									<div class="mb-4 col-12 me-5">
+										<div class="d-flex align-items-center justify-content-sm-center">
+											<div class="spinner-grow text-primary" role="status">
+												<span class="sr-only">...</span>
+											</div>
+										</div>
+									</div>
+								}
+								@if (!string.IsNullOrEmpty(downloadMessage) && fileDownloaded == string.Concat(l.BucketName, l.FileName))
+								{
+									<div class="col-11 text-sm-start">
+										<span class="badge bg-warning text-wrap">
+											<i class="bi bi-shield-lock"></i>@downloadMessage
+										</span>
+									</div>
+									<div class="col-1">
+										<span @onclick="() => { downloadMessage = string.Empty; }" class="badge bg-warning">
+											<i role="button" class="bi bi-shield-lock">X</i>
+										</span>
+									</div>
+								}
+							</div>
+						</div>
+					</div>
+				}
 			</div>
 		}
-		else if (!string.IsNullOrEmpty(@statusMensagem))
+		@if (!string.IsNullOrEmpty(@statusMensagem))
 		{
 			<div class="alert alert-warning">@statusMensagem</div>
 		}
@@ -57,13 +105,24 @@
 @code {
 
 	private string urlGetLogs = "api/logs";
+	private string urlGetDownloadLink = "api/downloadFileS3";
+	private string urlGetDownloadPermission = "api/testPermission";
 	private string statusMensagem = "";
+	private string downloadMessage = "";
+	private string fileDownloaded = string.Empty;
+	private bool loading = false;
+	private bool downloading = false;
+
+
 	private List<UploadLogDto> logsAWS = new List<UploadLogDto>();
 
 	private async Task CarregarLogs()
 	{
 		try
-		{			
+		{
+			loading = true;
+			downloadMessage = string.Empty;
+			statusMensagem = string.Empty;
 			logsAWS = await Http.GetFromJsonAsync<List<UploadLogDto>>(urlGetLogs) ?? new List<UploadLogDto>();
 			statusMensagem = logsAWS.Any() ? "" : "No records";
 		}
@@ -71,6 +130,46 @@
 		{
 			statusMensagem = $"Erro no processo: {ex.Message}";
 		}
+		finally { loading = false; }
+	}
 
+	private async Task ObterUrlSegura(string bucketName, string fileId, string fileName)
+	{
+		try
+		{
+			downloading = true;
+			downloadMessage = string.Empty;
+			fileDownloaded = string.Concat(bucketName, fileName);
+			var hasPermission = await Http.GetAsync($"{urlGetDownloadPermission}?bucketName={bucketName}&fileKey={fileId}");
+			if (hasPermission.IsSuccessStatusCode)
+			{
+				var downloadLink = await Http.GetAsync($"{urlGetDownloadLink}?bucketName={bucketName}&fileKey={fileId}");
+
+				if (downloadLink.IsSuccessStatusCode)
+				{
+					var link = await downloadLink.Content.ReadAsStringAsync();
+					await JS.InvokeVoidAsync("open", link, "_blank");
+				}
+			}
+			else
+			{
+				var msg = await hasPermission.Content.ReadAsStringAsync();
+
+				JsonNode msgErrors = JsonNode.Parse(msg.ToString())!;
+
+				JsonNode messageNode0 = msgErrors![0]!;
+				JsonNode messageNode1 = msgErrors![1]!;
+				JsonNode messageNode2 = msgErrors![2]!;
+				JsonNode messageNode3 = msgErrors![3]!;
+
+				downloadMessage = string.Format("{3} could not be downloaded ( {0}/{1}: {2}",
+				messageNode2.ToJsonString(), messageNode1.ToJsonString(), messageNode3.ToJsonString(), fileName);
+			}
+		}
+		catch
+		{
+			downloadMessage = $"Error server downloading file";
+		}
+		finally { downloading = false; }
 	}
 }

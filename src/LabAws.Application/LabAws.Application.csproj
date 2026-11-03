@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Interfaces\AWS\IS3StorageService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LabAws.Domain\LabAws.Domain.csproj" />
   </ItemGroup>
 
