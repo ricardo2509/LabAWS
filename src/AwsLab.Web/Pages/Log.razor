@@ -11,19 +11,19 @@
 
 <div class="container mt-5">
 	<div class="card shadow-sm p-4 mb-4">
-		<h2 class="text-primary mb-4">Uploaded files</h2>
+		<h2 class="text-primary mb-4">Files</h2>
 
 		<div class="container">
 			<div class="row">
-				<div class="mb-4 col-6">
+				<div class="mb-4 col-8">
 					<button class="btn btn-success" @onclick="LoadFiles">
-						🔄 Update file List
+						🔄 Update list
 					</button>
 				</div>
-				<div class="mb-4 col-6">
+				<div class="mb-4 col-4">
 					@if (loading)
 					{
-						<div class="d-flex align-items-center">
+						<div class="d-flex mt-1 align-items-center">
 							<div class="spinner-border" role="status">
 								<span class="sr-only"></span>
 							</div>
