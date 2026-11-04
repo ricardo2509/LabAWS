@@ -9,13 +9,13 @@
 
 <div class="container mt-5">
 	<div class="card shadow-sm p-4 mb-4">
-		<h2 class="text-primary mb-4">Control Panel - AWS Lab</h2>
+		<h2 class="text-primary mb-4">Control Panel</h2>
 
 		<div class="row">
 			@if (!addingBucket)
 			{
 				<div class="mb-4 col-12 col-sm-4 col-md-3">
-					<button class="btn btn-success w-100" @onclick="CarregarBuckets">
+					<button class="btn btn-success w-100" @onclick="ListBuckets">
 						🔄 Refresh buckets
 					</button>
 				</div>
@@ -58,13 +58,13 @@
 			</div>
 		}
 
-		@if (carregandoBuckets)
+		@if (loadingBuckets)
 		{
 			<div class="alert alert-info">Searching API data...</div>
 		}
-		else if ((buckets == null || !buckets.Any()) && !string.IsNullOrEmpty(statusMensagem))
+		else if ((buckets == null || !buckets.Any()) && !string.IsNullOrEmpty(statusMessage))
 		{
-			<div class="alert alert-warning">@statusMensagem</div>
+			<div class="alert alert-warning">@statusMessage</div>
 		}
 		else if (buckets != null && buckets.Any())
 		{
@@ -78,13 +78,13 @@
 				}
 			</ul>
 
-			<!-- SEÇÃO DE UPLOAD DE ARQUIVO -->
+			<!-- FILE UPLOAD SECTION -->
 			<div class="border p-4 rounded bg-white shadow-xs mt-4">
 				<h4 class="text-secondary mb-3">📤 Upload file</h4>
 
 				<div class="mb-3">
 					<label class="form-label">Select bucket:</label>
-					<select class="form-select w-50" @bind="bucketSelecionado">
+					<select class="form-select w-50" @bind="selectedBucket">
 						<option value="">-- Choose bucket --</option>
 						@foreach (var bucket in buckets)
 						{
@@ -95,13 +95,13 @@
 
 				<div class="mb-3">
 					<label class="form-label">Choose file (expect: ".jpg", ".jpeg", ".png", ".gif", ".txt"):</label>
-					<InputFile class="form-control w-50" OnChange="SelecionarArquivo" />
+					<InputFile class="form-control w-50" OnChange="SelectFile" />
 				</div>
 
-				<button class="btn btn-secondary" @onclick="EnviarArquivo" disabled="@(string.IsNullOrEmpty(bucketSelecionado) || arquivoSelecionado == null || processandoUpload)">
-					@if (processandoUpload)
+				<button class="btn btn-secondary" @onclick="SendFile" disabled="@(string.IsNullOrEmpty(selectedBucket) || selectedFile == null || processingUpload)">
+					@if (processingUpload)
 					{
-						<span>Uploading and notifiyng SQS...</span>
+						<span>Uploading and notifying SQS...</span>
 					}
 					else
 					{
@@ -109,9 +109,9 @@
 					}
 				</button>
 
-				@if (!string.IsNullOrEmpty(statusMensagem))
+				@if (!string.IsNullOrEmpty(statusMessage))
 				{
-					<div class="alert alert-success mt-3">@statusMensagem</div>
+					<div class="alert alert-success mt-3">@statusMessage</div>
 				}
 			</div>
 		}
@@ -121,12 +121,12 @@
 
 @code {
 	private List<string>? buckets = new List<string>();
-	private bool carregandoBuckets = false;
-	private bool processandoUpload = false;
+	private bool loadingBuckets = false;
+	private bool processingUpload = false;
 
-	private string bucketSelecionado = "";
-	private IBrowserFile? arquivoSelecionado;
-	private string statusMensagem = "";
+	private string selectedBucket = "";
+	private IBrowserFile? selectedFile;
+	private string statusMessage = "";
 
 	private bool addingBucket = false;
 	private bool creatBucket = false;
@@ -143,7 +143,7 @@
 		addingBucket = true;
 		creatBucket = true;
 		messageBucketCreated = string.Empty;
-		carregandoBuckets = false;
+		loadingBuckets = false;
 		buckets = null;
 	}
 
@@ -156,13 +156,13 @@
 			if (respostaUpload.IsSuccessStatusCode)
 			{
 				messageBucketCreated = $"Bucket '{newBucket}' created on S3";
-				await CarregarBuckets();
+				await ListBuckets();
 				creatBucket = false;
 			}
 			else
 			{
 				var erroDto = await respostaUpload.Content.ReadFromJsonAsync<ResponseUpload>();
-				messageBucketCreated = erroDto?.Erro ?? "Erro desconhecido.";
+				messageBucketCreated = erroDto?.Erro ?? "Unknown error.";
 			}
 		}
 		catch (Exception ex)
@@ -185,40 +185,40 @@
 		addingBucket = false;
 	}
 
-	private async Task CarregarBuckets()
+	private async Task ListBuckets()
 	{
-		carregandoBuckets = true;
+		loadingBuckets = true;
 		try
 		{
 			buckets = await Http.GetFromJsonAsync<List<string>>(urlGetBuckets);
 			if (buckets != null && buckets.Any())
 			{
-				bucketSelecionado = buckets.First();
+				selectedBucket = buckets.First();
 			}
-			statusMensagem = buckets == null || !buckets.Any() ? "No bucket found." : "";
+			statusMessage = buckets == null || !buckets.Any() ? "No bucket found." : "";
 		}
 		catch (Exception ex)
 		{
-			statusMensagem = $"Erro listing AWS: {ex.Message}";
+			statusMessage = $"Erro listing AWS: {ex.Message}";
 		}
 		finally
 		{
-			carregandoBuckets = false;
+			loadingBuckets = false;
 		}
 	}
 
-	private void SelecionarArquivo(InputFileChangeEventArgs e)
+	private void SelectFile(InputFileChangeEventArgs e)
 	{
-		arquivoSelecionado = e.File;
-		statusMensagem = "";
+		selectedFile = e.File;
+		statusMessage = "";
 	}
 
-	private async Task EnviarArquivo()
+	private async Task SendFile()
 	{
-		if (arquivoSelecionado == null || string.IsNullOrEmpty(bucketSelecionado)) return;
+		if (selectedFile == null || string.IsNullOrEmpty(selectedBucket)) return;
 
-		processandoUpload = true;
-		statusMensagem = "";
+		processingUpload = true;
+		statusMessage = "";
 
 		try
 		{
@@ -227,43 +227,43 @@
 			// 1. FAZ O UPLOAD DO ARQUIVO PARA O S3 VIA API
 			using (MultipartFormDataContent conteudoFormulario = new MultipartFormDataContent())
 			{
-				var conteudoArquivo = new StreamContent(arquivoSelecionado.OpenReadStream()); // maxAllowedSize: 1024 * 1024 * 5 - Max 5MB (now verified server side)
-				conteudoArquivo.Headers.ContentType = new MediaTypeHeaderValue(arquivoSelecionado.ContentType);
-				conteudoFormulario.Add(conteudoArquivo, "file", arquivoSelecionado.Name);
+				var conteudoArquivo = new StreamContent(selectedFile.OpenReadStream()); // maxAllowedSize: 1024 * 1024 * 5 - Max 5MB (now verified server side)
+				conteudoArquivo.Headers.ContentType = new MediaTypeHeaderValue(selectedFile.ContentType);
+				conteudoFormulario.Add(conteudoArquivo, "file", selectedFile.Name);
 
-				respostaUpload = await Http.PostAsync($"{urlUpload}?bucketName={bucketSelecionado}", conteudoFormulario);
+				respostaUpload = await Http.PostAsync($"{urlUpload}?bucketName={selectedBucket}", conteudoFormulario);
 			}
 			;
 
 			if (respostaUpload.IsSuccessStatusCode)
 			{
 				// 2. DISPARA A NOTIFICAÇÃO DO SQS VIA API
-				var respostaNotificar = await Http.PostAsync($"{urlNotificar}?fileName={arquivoSelecionado.Name}&bucketName={bucketSelecionado}", null);
+				var respostaNotificar = await Http.PostAsync($"{urlNotificar}?fileName={selectedFile.Name}&bucketName={selectedBucket}", null);
 
 				if (respostaNotificar.IsSuccessStatusCode)
 				{
-					statusMensagem = $"Sucesso total! Arquivo '{arquivoSelecionado.Name}' guardado no S3 e evento enviado para a Fila SQS!";
+					statusMessage = $"File '{selectedFile.Name}' saved to S3 and event sent to SQS!";
 				}
 				else
 				{
 					var erroDto = await respostaUpload.Content.ReadFromJsonAsync<ResponseUpload>();
 					//					statusMensagem = erroDto?.Erro ?? "Erro desconhecido.";
-					statusMensagem = string.Format("Arquivo enviado para o S3, mas falhou ao gerar evento no SQS ({0}).", erroDto?.Erro ?? "");
+					statusMessage = string.Format("File sent to S3, but failed to generate event in SQS ({0}).", erroDto?.Erro ?? "");
 				}
 			}
 			else
 			{
 				var erroDto = await respostaUpload.Content.ReadFromJsonAsync<ResponseUpload>();
-				statusMensagem = erroDto?.Erro ?? "Erro desconhecido.";
+				statusMessage = erroDto?.Erro ?? "Unknown error.";
 			}
 		}
 		catch (Exception ex)
 		{
-			statusMensagem = $"Erro no processo: {ex.Message}";
+			statusMessage = $"Error: {ex.Message}";
 		}
 		finally
 		{
-			processandoUpload = false;
+			processingUpload = false;
 		}
 	}
 }

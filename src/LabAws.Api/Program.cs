@@ -90,7 +90,7 @@ app.UseAntiforgery();
 app.MapPost("/api/createBucket", async (string bucketName, [FromServices] CreateBucketUseCase useCase) =>
 {
     await useCase.ExecuteAsync(bucketName);
-    return Results.Ok("Bucket created successful");
+    return Results.Ok("Bucket created successfully");
 
 });
 
@@ -108,7 +108,7 @@ app.MapPost("/api/uploadFile", static async (string bucketName, IFormFile file, 
         ProcessFileCommand processFileCommand = new ProcessFileCommand(fileStream, file.FileName, string.Empty, file.Length, bucketName);
         await useCase.ExecutarAsync(processFileCommand);
 
-        return Results.Ok("File upload successful");
+        return Results.Ok("File upload successfully");
 }
 ).DisableAntiforgery(); ;
 
@@ -117,7 +117,7 @@ app.MapPost("/api/notificar-arquivo", async(string fileName, string bucketName, 
     try
     {
         var messageId=await mensageriaService.SendNotificationAsync(fileName, bucketName);
-        return Results.Ok(new { Message = "Mensagem enviada com sucesso para a fila SQS.", MessageId = messageId });
+        return Results.Ok(new { Message = "Message sent successfully to SQS Queue.", MessageId = messageId });
     }
     catch (Exception ex)
     {
@@ -148,11 +148,10 @@ app.MapGet("/api/testPermission", async (string bucketName, string fileKey, Down
             return Results.Ok();
         else
             return Results.Problem(accessGranted.Message, statusCode: 403);
-//        return Results.Text(accessGranted.Message, "application/json");
     }
     catch
     {
-        return Results.Problem($"Error downloading th file");
+        return Results.Problem($"Error downloading file");
     }
 });
 
@@ -165,7 +164,7 @@ app.MapGet("/api/downloadFileS3", async (string bucketName, string fileKey, Down
     }
     catch
     {
-        return Results.Problem($"Error downloading th file");
+        return Results.Problem($"Error downloading file");
     }
 });
 

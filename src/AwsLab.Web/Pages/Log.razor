@@ -11,13 +11,13 @@
 
 <div class="container mt-5">
 	<div class="card shadow-sm p-4 mb-4">
-		<h2 class="text-primary mb-4">Log files access - AWS Lab</h2>
+		<h2 class="text-primary mb-4">Uploaded files</h2>
 
 		<div class="container">
 			<div class="row">
 				<div class="mb-4 col-6">
-					<button class="btn btn-success" @onclick="CarregarLogs">
-						🔄 Update Logs List
+					<button class="btn btn-success" @onclick="LoadFiles">
+						🔄 Update file List
 					</button>
 				</div>
 				<div class="mb-4 col-6">
@@ -57,7 +57,7 @@
 						<div class="col-12 col-md-6 text-sm-end">
 							<div class="row g-2 justify-content-sm-end">
 								<div class="col-7 col-sm-4">
-									<button @onclick="() => ObterUrlSegura(l.BucketName, l.QueueId, l.FileName)" class="btn btn-outline-primary btn-sm">
+									<button @onclick="() => GetSafeURL(l.BucketName, l.QueueId, l.FileName)" class="btn btn-outline-primary btn-sm">
 										📥 Baixar Arquivo
 									</button>
 								</div>
@@ -116,7 +116,7 @@
 
 	private List<UploadLogDto> logsAWS = new List<UploadLogDto>();
 
-	private async Task CarregarLogs()
+	private async Task LoadFiles()
 	{
 		try
 		{
@@ -128,12 +128,12 @@
 		}
 		catch (Exception ex)
 		{
-			statusMensagem = $"Erro no processo: {ex.Message}";
+			statusMensagem = $"Error in the process: {ex.Message}";
 		}
 		finally { loading = false; }
 	}
 
-	private async Task ObterUrlSegura(string bucketName, string fileId, string fileName)
+	private async Task GetSafeURL(string bucketName, string fileId, string fileName)
 	{
 		try
 		{
@@ -168,7 +168,7 @@
 		}
 		catch
 		{
-			downloadMessage = $"Error server downloading file";
+			downloadMessage = $"Server error downloading file";
 		}
 		finally { downloading = false; }
 	}
